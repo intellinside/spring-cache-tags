@@ -1,0 +1,56 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # --- Checkout ---
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Setup Java + GPG ---
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: temurin
+          server-id: central
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      # --- Determine version ---
+      - name: Determine version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            RAW_TAG=${GITHUB_REF#refs/tags/}
+            VERSION=${RAW_TAG#v}
+            VERSION=${VERSION#V}
+          else
+            VERSION=1.0.0-SNAPSHOT
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # --- Set Maven project version ---
+      - name: Set Maven version
+        run: |
+          mvn -B versions:set -DnewVersion=$VERSION
+          mvn -B versions:set-property -Dproperty=revision -DnewVersion=$VERSION
+
+      # --- Build and deploy ---
+      - name: Build & Deploy
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -DskipTests clean deploy
