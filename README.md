@@ -295,3 +295,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### Version 0.2.0
 - Added TTL support for Redis backend
+- Added support for Spring Template Expression syntax (#{...})

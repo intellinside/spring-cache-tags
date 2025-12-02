@@ -5,6 +5,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
@@ -28,7 +29,7 @@ import java.util.Optional;
  *
  * <p>
  * <b>Example expressions:</b>
- * 
+ *
  * <pre>
  * \"'user:' + #userId\"           // Concatenates literal with argument
  * \"'result:' + #result.id\"       // Uses property of returned object
@@ -47,8 +48,9 @@ import java.util.Optional;
  * @see org.springframework.core.DefaultParameterNameDiscoverer
  */
 public class SpelExpressionEvaluator {
-    private static final ParameterNameDiscoverer paramNameDiscoverer = new DefaultParameterNameDiscoverer();
-    private static final ExpressionParser parser = new SpelExpressionParser();
+    private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
+    private static final ExpressionParser PARSER = new SpelExpressionParser();
+    private static final TemplateParserContext TEMPLATE_PARSER_CONTEXT = new TemplateParserContext();
 
     /**
      * Evaluates a SpEL expression within the context of a join point and method
@@ -92,7 +94,7 @@ public class SpelExpressionEvaluator {
      * @return the string result of the expression evaluation
      */
     public String evaluate(String template, Method method, Object result, Object... args) {
-        String[] paramNames = paramNameDiscoverer.getParameterNames(method);
+        String[] paramNames = PARAMETER_NAME_DISCOVERER.getParameterNames(method);
 
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariable("args", args);
@@ -105,6 +107,11 @@ public class SpelExpressionEvaluator {
             }
         }
 
-        return parser.parseExpression(template).getValue(context, String.class);
+        boolean isTemplate = template.contains("#{");
+
+        if (isTemplate) {
+            return PARSER.parseExpression(template, TEMPLATE_PARSER_CONTEXT).getValue(context, String.class);
+        }
+        return PARSER.parseExpression(template).getValue(context, String.class);
     }
 }
