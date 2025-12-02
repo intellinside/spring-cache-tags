@@ -36,6 +36,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.5.8</spring-boot.version>
+        <skipSignArtifacts>true</skipSignArtifacts>
+        <skipPublishing>true</skipPublishing>
     </properties>
 
     <dependencyManagement>
@@ -97,6 +99,9 @@
                         <goals><goal>sign</goal></goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <skip>${skipSignArtifacts}</skip>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -105,11 +110,22 @@
                 <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <skipPublishing>${skipPublishing}</skipPublishing>
                     <publishingServerId>central</publishingServerId>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>deploy-to-central</id>
+            <properties>
+                <skipSignArtifacts>false</skipSignArtifacts>
+                <skipPublishing>false</skipPublishing>
+            </properties>
+        </profile>
+    </profiles>
 
     <licenses>
         <license>
