@@ -27,13 +27,13 @@ It allows you to group cached methods by tags and evict cache entries by one or 
 <dependency>
     <groupId>io.github.intellinside</groupId>
     <artifactId>spring-boot-starter-cache-tags</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.1.0'
+implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.2.0'
 ```
 
 ### Basic Example
