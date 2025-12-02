@@ -35,7 +35,6 @@ import java.util.Set;
  * <li>Methods are null-tolerant: missing Redis Set members produce no entries
  * and the lookup returns an empty map when no associations are found.</li>
  * </ul>
- * </p>
  *
  * @author intellinside
  * @see CacheTagsStore
