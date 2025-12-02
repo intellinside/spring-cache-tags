@@ -286,13 +286,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Changelog
 
+### Version 0.2.0
+- Added TTL support for Redis backend
+- Added support for Spring Template Expression syntax (#{...})
+
+
 ### Version 0.1.0
 - Initial release
 - Support for @CacheTags and @EvictTags annotations
 - In-Memory and Redis storage backends
 - Full Spring Boot auto-configuration
 - Complete JavaDoc documentation
-
-### Version 0.2.0
-- Added TTL support for Redis backend
-- Added support for Spring Template Expression syntax (#{...})

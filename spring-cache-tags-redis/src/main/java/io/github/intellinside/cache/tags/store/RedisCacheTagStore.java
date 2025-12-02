@@ -14,35 +14,28 @@ import java.util.Set;
  * Redis-based implementation of {@link CacheTagsStore}.
  *
  * <p>
- * This implementation stores tag-to-key mappings in Redis using Redis Sets.
- * It is suitable for distributed systems, clustered deployments, or scenarios
- * where
- * tag associations need to be shared across multiple application instances.
+ * This implementation stores tag-to-key mappings in Redis using Redis Sets
+ * (one Redis Set per tag). It is intended for distributed or clustered
+ * deployments where tag associations must be shared between application
+ * instances.
+ * </p>
  *
  * <p>
- * <b>Features:</b>
+ * <b>Behavior and guarantees</b>:
  * <ul>
- * <li>Distributed tag mappings across multiple instances</li>
- * <li>Automatic data persistence</li>
- * <li>Thread-safe operations through Redis</li>
- * <li>Suitable for high-concurrency environments</li>
+ * <li>Associations are stored in Redis Sets (atomic, concurrent-safe on the
+ * Redis side).</li>
+ * <li>Entries are stored as strings in the format {@code {cacheName}:{key}},
+ * where {@code key} is obtained via {@code toString()} on the provided key
+ * object.</li>
+ * <li>TTL (expiration) is applied per-tag when the configured
+ * {@code RedisCacheConfiguration#getTtlFunction()} returns a positive
+ * {@code Duration} for the tag. TTL is set using {@code RedisTemplate.expire}.
+ * </li>
+ * <li>Methods are null-tolerant: missing Redis Set members produce no entries
+ * and the lookup returns an empty map when no associations are found.</li>
  * </ul>
- *
- * <p>
- * <b>Redis Data Structure:</b>
- * <ul>
- * <li>Keys: "tag:{tagName}" (Redis Set)</li>
- * <li>Values: "{cacheName}:{key}" (serialized cache references)</li>
- * </ul>
- *
- * <p>
- * <b>Example:</b>
- *
- * <pre>
- * SET tag:user:123 user-cache:123:details
- * SET tag:user:123 user-cache:123:permissions
- * SET tag:type:admin admin-cache:456:settings
- * </pre>
+ * </p>
  *
  * @author intellinside
  * @see CacheTagsStore

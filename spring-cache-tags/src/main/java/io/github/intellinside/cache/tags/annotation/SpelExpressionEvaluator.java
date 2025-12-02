@@ -31,10 +31,12 @@ import java.util.Optional;
  * <b>Example expressions:</b>
  *
  * <pre>
- * \"'user:' + #userId\"           // Concatenates literal with argument
- * \"'result:' + #result.id\"       // Uses property of returned object
- * \"'cache:' + #args[0]\"          // Uses first argument
- * \"#result.type.toString()\"      // Calls methods on result
+ * "'user:' + #userId"                // Concatenates a literal with a named parameter
+ * "'result:' + #result.id"           // Uses a property of the returned object
+ * "'cache:' + #args[0]"              // Uses the first argument from the #args array
+ * "#result?.type?.toString()"        // Safe navigation to avoid NPE when result is null
+ * "#method.name"                      // Access method metadata (name, declaringType, etc.)
+ * "User: #{#userId}"                  // Template-style expression (uses TemplateParserContext)
  * </pre>
  *
  * <p>
