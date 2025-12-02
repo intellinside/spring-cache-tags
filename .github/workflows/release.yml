@@ -53,4 +53,4 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn -B -DskipTests -Pdeploy-to-central clean deploy
+        run: mvn -B -Pdeploy-to-central clean deploy
