@@ -2,11 +2,11 @@
 
 [![Build & Deploy](https://github.com/intellinside/spring-cache-tags/actions/workflows/release.yml/badge.svg)](https://github.com/intellinside/spring-cache-tags/actions/workflows/release.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.intellinside/spring-cache-tags.svg?style=flat-square)](https://search.maven.org/artifact/io.github.intellinside/spring-cache-tags)
+[![javadoc](https://javadoc.io/badge2/io.github.intellinside/spring-cache-tags/javadoc.svg)](https://javadoc.io/doc/io.github.intellinside/spring-cache-tags)
+
 
 **Spring Cache Tags** is a lightweight library for managing Spring Cache using tags.  
 It allows you to group cached methods by tags and evict cache entries by one or multiple tags at once.
-
----
 
 ## Features
 
@@ -18,8 +18,6 @@ It allows you to group cached methods by tags and evict cache entries by one or 
 - 🔒 Thread-safe operations with concurrent access support
 - 📦 Automatic Spring Boot auto-configuration
 
----
-
 ## Quick Start
 
 ### Installation
@@ -29,13 +27,13 @@ It allows you to group cached methods by tags and evict cache entries by one or 
 <dependency>
     <groupId>io.github.intellinside</groupId>
     <artifactId>spring-boot-starter-cache-tags</artifactId>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-implementation 'io.github.intellinside:spring-boot-starter-cache-tags:1.0.0'
+implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.1.0'
 ```
 
 ### Basic Example
@@ -57,8 +55,6 @@ public class UserService {
     }
 }
 ```
-
----
 
 ## Core Concepts
 
@@ -101,8 +97,6 @@ public Product updateProduct(Long productId, String category) {
     return productRepository.updateCategory(productId, category);
 }
 ```
-
----
 
 ## Storage Backends
 
@@ -157,8 +151,6 @@ SET tag:user:123 users:user:123
 SET tag:user:123 users:permissions:123
 SET tag:admin admins:settings:456
 ```
-
----
 
 ## Advanced Usage
 
@@ -222,15 +214,11 @@ public User getUserWithRoleAndDepartment(Long id) {
 }
 ```
 
----
-
 ## Configuration
 
 ### Spring Boot Auto-Configuration
 
 The library automatically configures itself with Spring Boot. No additional configuration is needed for basic functionality.
-
----
 
 ## Performance Considerations
 
@@ -250,8 +238,6 @@ The library automatically configures itself with Spring Boot. No additional conf
 3. Consider cache key design to minimize tag entries
 4. Monitor memory usage in in-memory mode
 5. Use Redis for production distributed systems
-
----
 
 ## Troubleshooting
 
@@ -279,39 +265,28 @@ The library automatically configures itself with Spring Boot. No additional conf
 3. Monitor and clean up unused cache entries
 4. Review SpEL expressions for correctness
 
----
-
 ## Requirements
 
 - **Java**: 21 or higher
 - **Spring Framework**: 6.x
 - **Spring Boot**: 3.x (optional, for auto-configuration)
 
-
----
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
----
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
 
 ## Support & Documentation
 
 - 📖 [API Documentation](https://javadoc.io/doc/io.github.intellinside/spring-cache-tags)
 - 🐛 [Issue Tracker](https://github.com/intellinside/spring-cache-tags/issues)
 
----
-
 ## Changelog
 
-### Version 1.0.0
+### Version 0.1.0
 - Initial release
 - Support for @CacheTags and @EvictTags annotations
 - In-Memory and Redis storage backends
