@@ -292,3 +292,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - In-Memory and Redis storage backends
 - Full Spring Boot auto-configuration
 - Complete JavaDoc documentation
+
+### Version 0.2.0
+- Added TTL support for Redis backend
