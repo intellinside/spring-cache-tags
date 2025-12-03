@@ -1,15 +1,14 @@
 package io.github.intellinside.cache.tags.annotation;
 
 import io.github.intellinside.cache.tags.context.TagContext;
-import io.github.intellinside.cache.tags.store.CacheTagsStore;
 import io.github.intellinside.cache.tags.context.TagContextHolder;
+import io.github.intellinside.cache.tags.store.CacheTagsStore;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
@@ -48,7 +47,6 @@ import java.util.stream.Collectors;
  * @see CacheTagsStore
  */
 @Aspect
-@Component
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @RequiredArgsConstructor
 public class CacheTagsAspect {

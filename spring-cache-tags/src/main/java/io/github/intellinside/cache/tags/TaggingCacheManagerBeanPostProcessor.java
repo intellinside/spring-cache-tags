@@ -1,57 +1,75 @@
 package io.github.intellinside.cache.tags;
 
+import io.github.intellinside.cache.tags.context.TagContextHolder;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
- * A Spring BeanPostProcessor that automatically wraps all {@link CacheManager}
- * beans
- * with {@link TaggingCacheManager} to enable tag-based cache operations.
+ * Replaces Spring `CacheManager` beans with proxies that provide tag-aware
+ * caching.
  *
  * <p>
- * This processor is registered in the Spring context by CacheTagsAutoConfiguration}
- * and intercepts the initialization of CacheManager beans. Each CacheManager
- * encountered
- * is wrapped to provide tag-aware caching functionality transparently.
+ * When a `CacheManager` is found, it is proxied so that calls to
+ * `getCache(...)` return wrapped `Cache` instances. Wrapped caches capture
+ * the cache name and keys on `put` / `putIfAbsent` calls to support
+ * tag-based invalidation. Non-`CacheManager` beans are left unchanged.
  *
- * <p>
- * <b>How it works:</b>
- * <ol>
- * <li>Spring instantiates and initializes the CacheManager bean</li>
- * <li>This processor's postProcessAfterInitialization method is called</li>
- * <li>If the bean is a CacheManager, it is wrapped with
- * {@link TaggingCacheManager}</li>
- * <li>The wrapped manager is used throughout the application</li>
- * </ol>
- *
- * <p>
- * <b>Note:</b>
- * Only CacheManager instances are wrapped. Other beans are passed through
- * unchanged.
- *
- * @author intellinside
- * @see TaggingCacheManager
  */
 public class TaggingCacheManagerBeanPostProcessor implements BeanPostProcessor {
-    /**
-     * Wraps CacheManager beans with TaggingCacheManager after initialization.
-     *
-     * @param bean     the bean instance
-     * @param beanName the bean name
-     * @return a TaggingCacheManager if the bean is a CacheManager, otherwise the
-     *         original bean
-     * @throws BeansException if an error occurs during processing
-     */
+    private final Map<String, Cache> caches = new ConcurrentHashMap<>();
+
     @Override
     public @Nullable Object postProcessAfterInitialization(@Nonnull Object bean, @Nonnull String beanName)
             throws BeansException {
-        if (bean instanceof CacheManager cacheManager) {
-            return new TaggingCacheManager(cacheManager);
+        if (!(bean instanceof CacheManager cacheManager)) {
+            return bean;
         }
 
-        return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
+        ProxyFactory factory = new ProxyFactory(cacheManager);
+        factory.setProxyTargetClass(true);
+
+        factory.addAdvice((MethodInterceptor) invocation -> {
+            Method method = invocation.getMethod();
+
+            if (!method.getName().equals("getCache")) {
+                return invocation.proceed();
+            }
+
+            Object result = invocation.proceed();
+            if (result instanceof Cache cache) {
+                return caches.computeIfAbsent(cache.getName(), key -> wrapCache(cache));
+            }
+
+            return result;
+        });
+
+        return factory.getProxy();
+    }
+
+    private Cache wrapCache(Cache original) {
+        ProxyFactory factory = new ProxyFactory(original);
+        factory.setProxyTargetClass(true);
+
+        factory.addAdvice((MethodInterceptor) invocation -> {
+            String name = invocation.getMethod().getName();
+
+            if (name.equals("put") || name.equals("putIfAbsent")) {
+                TagContextHolder.set(original.getName(), invocation.getArguments()[0]);
+            }
+
+            return invocation.proceed();
+        });
+
+        return (Cache) factory.getProxy();
     }
 }

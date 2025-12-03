@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
@@ -46,7 +46,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  *
  * @author intellinside
  * @see CacheTagsStore
- * @see TaggingCacheManager
  * @see CacheTagsAspect
  * @see EvictTagsAspect
  */
@@ -80,8 +79,8 @@ public class CacheTagsAutoConfiguration {
     @ConditionalOnProperty(value = "spring.cache.type", havingValue = "redis")
     @ConditionalOnBean(StringRedisTemplate.class)
     public CacheTagsStore redisCacheTagsStore(StringRedisTemplate redisTemplate,
-                                              RedisCacheConfiguration redisCacheConfiguration) {
-        return new RedisCacheTagStore(redisTemplate, redisCacheConfiguration);
+                                              RedisCacheManager redisCacheManager) {
+        return new RedisCacheTagStore(redisTemplate, redisCacheManager);
     }
 
     /**

@@ -9,7 +9,6 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -46,7 +45,6 @@ import java.util.stream.Collectors;
  * @see CacheTagsStore
  */
 @Aspect
-@Component
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @RequiredArgsConstructor
 public class EvictTagsAspect {

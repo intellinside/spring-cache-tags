@@ -2,6 +2,7 @@ package io.github.intellinside.cache.tags.store;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;
@@ -43,7 +44,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class RedisCacheTagStore implements CacheTagsStore {
     private final RedisTemplate<String, String> redisTemplate;
-    private final RedisCacheConfiguration redisCacheConfiguration;
+    private final RedisCacheManager redisCacheManager;
 
     /**
      * Associates multiple tags with a cache key by storing them in Redis Sets.
@@ -59,13 +60,18 @@ public class RedisCacheTagStore implements CacheTagsStore {
     @Override
     public void addMappings(Set<String> tags, String cacheName, Object key) {
         String serializedKey = cacheName + ":" + key.toString();
+
+        RedisCacheConfiguration config = redisCacheManager.getCacheConfigurations()
+                .getOrDefault(cacheName, RedisCacheConfiguration.defaultCacheConfig());
+
         tags.stream()
                 .map(tag -> "tag:" + tag)
                 .forEach(tag -> {
                     redisTemplate.opsForSet().add(tag, serializedKey);
-                    Duration timeToLive = redisCacheConfiguration.getTtlFunction().getTimeToLive(tag, null);
+
+                    Duration timeToLive = config.getTtlFunction().getTimeToLive(tag, null);
                     if (timeToLive.isPositive()) {
-                        redisTemplate.expire(tag, timeToLive);
+                        redisTemplate.expire(tag, timeToLive.plusMinutes(5));
                     }
                 });
     }

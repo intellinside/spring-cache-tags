@@ -13,41 +13,18 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
- * Utility class for evaluating Spring Expression Language (SpEL) templates in
- * the context
- * of cached method invocations.
+ * Simple helper to evaluate SpEL expressions or templates for a method call.
  *
  * <p>
- * This evaluator provides methods to parse and evaluate SpEL expressions with
- * access to:
- * <ul>
- * <li>Method arguments by name (requires -parameters compiler flag)</li>
- * <li>Method return value via {@code #result}</li>
- * <li>All method arguments via {@code #args} array</li>
- * <li>Method metadata via {@code #method}</li>
- * </ul>
+ * The evaluator makes method arguments, the full argument array, the method
+ * object and the return value available to expressions (for example,
+ * {@code #userId}, {@code #args[0]}, {@code #method}, {@code #result}). It
+ * supports both plain SpEL and templates containing "#{...}".
  *
  * <p>
- * <b>Example expressions:</b>
- *
- * <pre>
- * "'user:' + #userId"                // Concatenates a literal with a named parameter
- * "'result:' + #result.id"           // Uses a property of the returned object
- * "'cache:' + #args[0]"              // Uses the first argument from the #args array
- * "#result?.type?.toString()"        // Safe navigation to avoid NPE when result is null
- * "#method.name"                      // Access method metadata (name, declaringType, etc.)
- * "User: #{#userId}"                  // Template-style expression (uses TemplateParserContext)
- * </pre>
- *
- * <p>
- * <b>Thread Safety:</b>
- * This class is thread-safe and uses static instances of
- * {@code ParameterNameDiscoverer}
- * and {@code ExpressionParser}.
+ * Thread-safe: parser and utilities are shared.
  *
  * @author intellinside
- * @see org.springframework.expression.spel.standard.SpelExpressionParser
- * @see org.springframework.core.DefaultParameterNameDiscoverer
  */
 public class SpelExpressionEvaluator {
     private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
@@ -59,18 +36,14 @@ public class SpelExpressionEvaluator {
      * result.
      *
      * <p>
-     * The expression can reference:
-     * <ul>
-     * <li>Method parameters by name</li>
-     * <li>Method result via {@code #result}</li>
-     * <li>All arguments via {@code #args}</li>
-     * <li>Method object via {@code #method}</li>
-     * </ul>
+     * Evaluate the given expression or template using information from the
+     * provided join point and the method result. Available variables include
+     * parameter names, {@code #args}, {@code #method} and {@code #result}.
      *
-     * @param template the SpEL expression to evaluate
-     * @param jp       the join point providing method and arguments context
-     * @param result   the return value of the method
-     * @return the string result of the expression evaluation
+     * @param template expression or template to evaluate
+     * @param jp       the join point for the call
+     * @param result   the method return value
+     * @return evaluated string (may be {@code null} if expression produces null)
      */
     public String evaluate(String template, JoinPoint jp, Object result) {
         Method method = Optional.ofNullable(jp.getSignature())
@@ -86,14 +59,15 @@ public class SpelExpressionEvaluator {
      * Evaluates a SpEL expression with explicit method and arguments context.
      *
      * <p>
-     * The expression can reference method parameters by name, result object,
-     * arguments array, and method metadata.
+     * Evaluate the expression or template with explicit {@code method} and
+     * {@code args}. When parameter names are available they are bound to their
+     * corresponding argument values.
      *
-     * @param template the SpEL expression to evaluate
-     * @param method   the method being invoked
-     * @param result   the return value of the method
-     * @param args     the arguments passed to the method
-     * @return the string result of the expression evaluation
+     * @param template expression or template to evaluate
+     * @param method   the invoked method (may be {@code null})
+     * @param result   the method return value
+     * @param args     argument values for the method
+     * @return evaluated string (may be {@code null} if expression produces null)
      */
     public String evaluate(String template, Method method, Object result, Object... args) {
         String[] paramNames = PARAMETER_NAME_DISCOVERER.getParameterNames(method);

@@ -27,13 +27,13 @@ It allows you to group cached methods by tags and evict cache entries by one or 
 <dependency>
     <groupId>io.github.intellinside</groupId>
     <artifactId>spring-boot-starter-cache-tags</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.2.0'
+implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.3.0'
 ```
 
 ### Basic Example
@@ -74,7 +74,7 @@ The `@CacheTags` annotation is used to associate one or more tags with cached me
 @CacheTags({
     "'product:' + #productId",
     "'category:' + #result.category",
-    "'price-range:' + #result.priceRange"
+    "price-range:#{#result.priceRange}"
 })
 public Product getProduct(Long productId) {
     return productRepository.findById(productId).orElse(null);
@@ -90,7 +90,7 @@ The `@EvictTags` annotation evicts all cache entries associated with specified t
 @EvictTags({
     "'product:' + #productId",
     "'category:' + #category",
-    "'price-range:' + #result.priceRange"
+    "price-range:#{#result.priceRange}"
 })
 public Product updateProduct(Long productId, String category) {
     // Update product in database
@@ -145,12 +145,6 @@ spring.redis.port=6379
 - Keys: `tag:{tagName}` (Redis Set)
 - Values: `{cacheName}:{key}` (serialized cache references)
 
-Example Redis structure:
-```
-SET tag:user:123 users:user:123
-SET tag:user:123 users:permissions:123
-SET tag:admin admins:settings:456
-```
 
 ## Advanced Usage
 
@@ -166,7 +160,7 @@ public class OrderService {
     @CacheTags({
         "'order:' + #orderId",
         "'customer:' + #customerId",
-        "'status:' + #result.status"
+        "status:#{#result.status}"
     })
     public Order getOrder(Long orderId, Long customerId) {
         return orderRepository.findById(orderId).orElse(null);
@@ -207,7 +201,7 @@ Generate tags based on result properties:
 @CacheTags({
     "'user:' + #id",
     "'role:' + #result.role",
-    "'department:' + #result.department"
+    "department:#{#result.department}"
 })
 public User getUserWithRoleAndDepartment(Long id) {
     return userRepository.findByIdWithRelations(id).orElse(null);
@@ -285,6 +279,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - 🐛 [Issue Tracker](https://github.com/intellinside/spring-cache-tags/issues)
 
 ## Changelog
+
+### Version 0.3.0
+- Using proxies instead of wrappers for the cache manager and caches.
+- Fixed TTL support for the Redis backend when configured with Spring Boot
 
 ### Version 0.2.0
 - Added TTL support for Redis backend
