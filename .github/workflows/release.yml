@@ -15,14 +15,6 @@ jobs:
       VERSION: ${{ steps.setver.outputs.VERSION }}
 
     steps:
-      - name: Cache Maven repo
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('spring-cache-tags/pom.xml', 'spring-cache-tags/*/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
-
       - name: Determine version
         id: setver
         run: |
@@ -40,14 +32,6 @@ jobs:
     needs: version
 
     steps:
-      - name: Cache Maven repo
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('spring-cache-tags/pom.xml', 'spring-cache-tags/*/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -70,14 +54,6 @@ jobs:
     needs: version
 
     steps:
-      - name: Cache Maven repo
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('spring-cache-tags/pom.xml', 'spring-cache-tags/*/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -101,14 +77,6 @@ jobs:
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Cache Maven repo
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('spring-cache-tags/pom.xml', 'spring-cache-tags/*/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
