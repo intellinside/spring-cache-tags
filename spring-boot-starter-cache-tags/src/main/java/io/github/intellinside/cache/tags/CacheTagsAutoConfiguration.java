@@ -58,7 +58,7 @@ public class CacheTagsAutoConfiguration {
      * @return a new {@link TaggingCacheManagerBeanPostProcessor}
      */
     @Bean
-    public TaggingCacheManagerBeanPostProcessor taggingCacheManagerBeanPostProcessor() {
+    public static TaggingCacheManagerBeanPostProcessor taggingCacheManagerBeanPostProcessor() {
         return new TaggingCacheManagerBeanPostProcessor();
     }
 

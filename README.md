@@ -27,13 +27,13 @@ It allows you to group cached methods by tags and evict cache entries by one or 
 <dependency>
     <groupId>io.github.intellinside</groupId>
     <artifactId>spring-boot-starter-cache-tags</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
 </dependency>
 ```
 
 #### Gradle
 ```groovy
-implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.3.0'
+implementation 'io.github.intellinside:spring-boot-starter-cache-tags:0.3.1'
 ```
 
 ### Basic Example
@@ -280,8 +280,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Changelog
 
+### Version 0.3.1
+- Updated BeanPostProcessor creation to use a static @Bean method
+
 ### Version 0.3.0
-- Using proxies instead of wrappers for the cache manager and caches.
+- Using proxies instead of wrappers for the cache manager and caches
 - Fixed TTL support for the Redis backend when configured with Spring Boot
 
 ### Version 0.2.0
